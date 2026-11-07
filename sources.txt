@@ -1,0 +1,19 @@
+# Pay-TV-Quellen für das nächtliche Nova-EPG (Dateien aus iptv-org/epg, Ordner sites/)
+# Eine Zeile pro Senderliste. Mit # auskommentieren, um eine Quelle abzuschalten.
+
+# Deutschland (u. a. Sky über MagentaTV)
+web.magentatv.de/web.magentatv.de.channels.xml
+# Österreich
+tv.magenta.at/tv.magenta.at.channels.xml
+# Schweiz
+teleboy.ch/teleboy.ch.channels.xml
+# Türkei (Digiturk/beIN, D-Smart, TV+)
+digiturk.com.tr/digiturk.com.tr.channels.xml
+dsmart.com.tr/dsmart.com.tr.channels.xml
+tvplus.com.tr/tvplus.com.tr.channels.xml
+# Frankreich (Canal+, SFR, beIN Sports France)
+canalplus.com/canalplus.com_fr.channels.xml
+tv.sfr.fr/tv.sfr.fr.channels.xml
+beinsports.com/beinsports.com_fr-fr.channels.xml
+# Niederlande (Ziggo)
+ziggogo.tv/ziggogo.tv.channels.xml

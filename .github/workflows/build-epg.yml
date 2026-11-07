@@ -1,0 +1,51 @@
+name: Nova-EPG bauen
+
+# Läuft jede Nacht und kann unter "Actions" auch von Hand gestartet werden.
+on:
+  schedule:
+    - cron: '30 1 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nova-epg
+  cancel-in-progress: false
+
+jobs:
+  grab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: iptv-org/epg holen
+        run: |
+          git clone --depth 1 https://github.com/iptv-org/epg.git iptv-epg
+          cd iptv-epg && (npm ci || npm install)
+
+      - name: Senderliste zusammenstellen
+        run: node build-channels.js iptv-epg/sites > iptv-epg/nova.channels.xml
+
+      - name: Programm abrufen (2 Tage)
+        working-directory: iptv-epg
+        run: |
+          npm run grab --- --channels=nova.channels.xml --output=guide.xml --gzip --days=2 --maxConnections=6 --timeout=20000
+          ls -la guide.xml*
+
+      - name: Veröffentlichen (Branch "epg", nur die neueste Datei)
+        run: |
+          mkdir publish
+          cp iptv-epg/guide.xml.gz publish/
+          cd publish
+          git init -q -b epg
+          git config user.name "nova-epg-bot"
+          git config user.email "nova-epg-bot@users.noreply.github.com"
+          git add guide.xml.gz
+          git commit -q -m "EPG $(date -u +%Y-%m-%d)"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" epg
